@@ -1,0 +1,191 @@
+--CREATE DATABASE BookStore
+uSE BookStore
+GO
+CREATE TABLE Country(
+	ID_COUNTRY INT NOT NULL PRIMARY KEY IDENTITY,
+	NameCountry nvarchar(20) NOT NULL )
+
+GO
+CREATE SCHEMA global
+
+GO
+ALTER SCHEMA global Transfer Country
+GO
+SELECT * FROM global.Country
+
+GO
+INSERT INTO global.Country
+VALUES ('Украина'),
+	('Великобритания'),
+	('Бельгия'),
+	('Германия'),
+	('Голландия'),
+	('Испания'),
+	('Италия'),
+	('Латвия'),
+	('Польша'),
+	('США'),
+	('Финляндия'),
+	('Франция'),
+	('Швеция')
+GO
+CREATE TABLE Themes(
+	ID_THEME INT NOT NULL PRIMARY KEY IDENTITY,
+	NameTheme nvarchar(30) NOT NULL)
+
+GO
+CREATE SCHEMA book
+GO
+ALTER SCHEMA book TRANSFER Themes
+GO
+
+GO
+INSERT INTO book.Themes
+VALUES ('Computer Science'),
+	('Science Fiction'),
+	('Web Technologies'),
+	('Programming'),
+	('Artiicial Intelligence'),
+	('Graphics and Design')
+
+GO
+CREATE TABLE Authors(
+	ID_AUTHOR INT NOT NULL PRIMARY KEY IDENTITY,
+	FirstName nvarchar(20) NOT NULL,
+	LastName nvarchar(20) NOT NULL,
+	ID_COUNTRY INT NOT NULL REFERENCES global.Country (ID_COUNTRY) 
+	ON DELETE NO ACTION ON UPDATE CASCADE )
+
+GO
+ALTER SCHEMA book TRANSFER Authors
+GO
+INSERT INTO [book].[Authors]
+	VALUES ('Nick', 'Bostrom', 2), 
+	('Brian', 'Christian', 9),
+	('Ray', 'Kurzweil', 5),
+	('Nicolas', 'Carr', 4),
+	('Max', 'Tegmark', 7),
+	('Thomas', 'Cormen', 5),
+	('Joe', 'Baron', 3),
+	('David', 'Chandler', 6),
+	('Donella', 'Meadows', 8),
+	('Gareth', 'James', 7),
+	('Donald', 'Knuth', 2),
+	('Bjarne', 'Stroustrup', 13),
+	('Eric', 'Matthes', 10),
+	('Charlez', 'Petzold', 11),
+	('Robert', 'Nystrom', 12),
+	('Wallace', 'Wang', 12),
+	('Joaeph', 'Connor', 12),
+	('Jordan', 'Hudgens', 10),
+	('Aditya', 'Shankar', 12),
+	('Paul', 'Laurence', 12),
+	('Michael', 'Dawson', 2),
+	('Brian', 'Kerninghan', 2),
+	('Bill', 'Phillips', 4)
+
+GO
+CREATE TABLE Shops(
+	ID_SHOP INT NOT NULL PRIMARY KEY IDENTITY,
+	NameShop nvarchar(20) NOT NULL,
+	ID_COUNTRY INT NOT NULL REFERENCES global.Country (ID_COUNTRY)
+	ON DELETE NO ACTION ON UPDATE CASCADE)
+GO
+CREATE SCHEMA sale
+GO
+ALTER SCHEMA sale TRANSFER Shops
+GO
+
+GO
+INSERT INTO sale.Shops
+	VALUES ('Букинист', 1),
+	('Amazon', 13),
+	('Буква', 1),
+	('Waterstones', 2),
+	('Alfa Antikvariat', 13),
+	('Sterling Books', 3)
+GO
+
+GO
+CREATE TABLE Books(
+	ID_BOOK INT NOT NULL PRIMARY KEY IDENTITY,
+	NameBook nvarchar(30) NOT NULL,
+	ID_THEME int NOT NULL REFERENCES book.Themes (ID_THEME)
+	ON DELETE NO ACTION ON UPDATE CASCADE,
+	ID_AUTHOR INT NOT NULL REFERENCES book.Authors(ID_AUTHOR) ON DELETE NO ACTION ON UPDATE CASCADE,
+	PRICE money NOT NULL,
+	DrawingOfBook Binary, 
+	DateOfPublish DATE NOT NULL DEFAULT GEtDATE(),
+	Pages INT NOT NULL)
+GO
+
+GO
+ALTER SCHEMA book TRANSFER Books
+GO
+
+
+GO
+INSERT INTO book.Books
+(NameBook, ID_THEME, ID_AUTHOR, PRICE, DateOfPublish, Pages)
+	VALUES('Superintelligence 2', 5, 1, 170.0, '2017-06-29', 432),
+	('Algorithms to Live By', 4, 2, 130.0, '2017-02-12', 656),
+	('Introduction to Algorithms', 1, 9, 140.0, '2015-05-17', 632),
+	('AWS Certified Solutions', 1, 7, 90.0, '2017-10-01', 820),
+	('The Black Swan', 1, 8, 60.0, '2016-11-28', 408),
+	('Pro HTML5 Games', 3, 19, 70.0, '2016-04-22', 712),
+	('Beginning C++ Through Game', 4, 21, 99.9, '2014-05-13', 782),
+	('The Art of Programming', 4, 11, 90.0, '2015-01-25', 964),
+	('Python Crash Course', 4, 13, 70.0, '2017-08-30', 856),
+	('Code: The Hidden Language', 4, 14, 79.9, '2014-10-25', 795),
+	('Game Programming Patterns', 4, 15, 90.0, '2017-11-24', 800),
+	('Beginning Programming', 4, 16, 60.0, '2016-12-08', 540),
+	('Basics of Java, SQL & C++', 4, 17, 90.0, '2017-09-18', 590),
+	('Statistical Learning', 4, 10, 100.0, '2017-11-24', 790)
+
+GO
+CREATE TABLE Sales(
+	ID_SALE INT NOT NULL PRIMARY KEY IDENTITY,
+	ID_BOOK INT NOT NULL REFERENCES book.Books(ID_BOOK),
+	DateOfSale DATE DEFAULT GetDate(),
+	Price Money NOT NULL,
+	Quantity int NOT NULL DEFAULT 1,
+	ID_SHOP int NOT NULL REFERENCES sale.Shops(ID_SHOP) ON DELETE NO ACTION ON UPDATE CASCADE)
+GO
+ALTER SCHEMA sale TRANSFER Sales
+GO
+SELECT * FROM book.Authors
+GO
+SELECT * FROM book.Themes
+Go
+SELECT * FROM book.Books
+GO
+INSERT INTO sale.Sales
+	VALUES (1, DEFAULT, 160.0, 2, 1),
+	(2, DEFAULT, 130, 1, 1),
+	(3, DEFAULT, 175, 1, 2),
+	(4, DEFAULT, 135, 2, 2),
+	(5, DEFAULT, 147, 3, 2),
+	(6, DEFAULT, 110, 6, 2),
+	(6, DEFAULT, 105, 5, 3),
+	(6, DEFAULT, 107, 3, 1),
+	(7, DEFAULT, 70, 2, 1),
+	(7, DEFAULT, 75, 4, 1),
+	(8, DEFAULT, 68, 1, 1),
+	(8, DEFAULT, 76, 2, 3),
+	(9, DEFAULT, 110, 3, 3),
+	(10, DEFAULT, 115, 2, 1),
+	(10, DEFAULT, 120, 1, 3),
+	(11, DEFAULT, 80, 4, 2),
+	(12, DEFAULT, 88, 3, 4),
+	(13, DEFAULT, 110, 4, 2),
+	(14, DEFAULT, 68, 7, 1),
+	(14, DEFAULT, 77, 4, 2),
+	(14, DEFAULT, 73, 3, 4),
+	(13, DEFAULT, 93, 1, 3),
+	(13, DEFAULT, 115, 3, 1),
+	(12, '04-12-2017', 80, 3, 2),
+	(14, '11-20-2017', 69, 1, 1),
+	(13, '08-24-2017', 75, 4, 2),
+	(8, '04-12-2017', 112, 2, 3),
+	(10, '04-12-2016', 115, 5, 2)
+
